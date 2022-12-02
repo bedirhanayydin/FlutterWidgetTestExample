@@ -11,10 +11,14 @@ import 'package:mockito/mockito.dart';
 
 void main() {
   late Calculator calc;
+  late Finder finderTextfieldTop;
+  late Finder finderTextfieldBottom;
   //her testten önce çalışır
   setUp(
     () {
       calc = MockCalculator();
+      finderTextfieldTop = find.byKey(const Key('textfield_top_plus'));
+      finderTextfieldBottom = find.byKey(const Key('textfield_bottom_plus'));
     },
   );
   testWidgets('CustomText_RenderFourWidgets', (WidgetTester tester) async {
@@ -51,9 +55,6 @@ void main() {
   group('Two digit operaiton', () {
     group('Operation.add', () {
       testWidgets('Paints 4.0 when adding 3 and 1', (tester) async {
-        final finder1 = find.byKey(const Key('textfield_top_plus'));
-        final finder2 = find.byKey(const Key('textfield_bottom_plus'));
-
         //mockito ile oluştueduğumuz instanceı test ettik
         when(calc.add(3.0, 1.0)).thenReturn(4.0);
 
@@ -67,13 +68,13 @@ void main() {
           ),
         ));
 
-        await tester.ensureVisible(finder1);
-        await tester.tap(finder1);
-        await tester.enterText(finder1, '3');
+        await tester.ensureVisible(finderTextfieldTop);
+        await tester.tap(finderTextfieldTop);
+        await tester.enterText(finderTextfieldTop, '3');
 
-        await tester.ensureVisible(finder2);
-        await tester.tap(finder2);
-        await tester.enterText(finder2, '1');
+        await tester.ensureVisible(finderTextfieldBottom);
+        await tester.tap(finderTextfieldBottom);
+        await tester.enterText(finderTextfieldBottom, '1');
 
         await tester.pumpAndSettle();
 
@@ -115,9 +116,6 @@ void main() {
 
     group('Operation.PowerTo', () {
       testWidgets('Result should be 25 when input5', (tester) async {
-        final finder1 = find.byKey(const Key('textfield_top_plus'));
-        final finder2 = find.byKey(const Key('textfield_bottom_plus'));
-
         //mockito ile oluştueduğumuz instanceı test ettik
         when(calc.powerTo(5, 2)).thenAnswer(
           (realInvocation) => Future.value(25),
@@ -133,13 +131,13 @@ void main() {
           ),
         ));
 
-        await tester.ensureVisible(finder1);
-        await tester.tap(finder1);
-        await tester.enterText(finder1, '5');
+        await tester.ensureVisible(finderTextfieldTop);
+        await tester.tap(finderTextfieldTop);
+        await tester.enterText(finderTextfieldTop, '5');
 
-        await tester.ensureVisible(finder2);
-        await tester.tap(finder2);
-        await tester.enterText(finder2, '2');
+        await tester.ensureVisible(finderTextfieldBottom);
+        await tester.tap(finderTextfieldBottom);
+        await tester.enterText(finderTextfieldBottom, '2');
 
         await tester.pumpAndSettle();
 
