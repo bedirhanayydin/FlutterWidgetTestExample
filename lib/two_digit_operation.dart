@@ -1,70 +1,88 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-
 import 'package:flutter_widget_test/calculator.dart';
-import 'package:flutter_widget_test/custom_text.dart';
 import 'package:flutter_widget_test/operation.dart';
 
 class TwoDigitOperation extends StatefulWidget {
-  Operation operation;
-  Calculator calculator;
-  TwoDigitOperation({
-    Key? key,
+  final Operation operation;
+  final Calculator calculator;
+  final VoidCallback onCalculated;
+
+  const TwoDigitOperation({
+    super.key,
     required this.operation,
     required this.calculator,
-  }) : super(key: key);
+    required this.onCalculated,
+  });
 
   @override
   State<TwoDigitOperation> createState() => _TwoDigitOperationState();
 }
 
 class _TwoDigitOperationState extends State<TwoDigitOperation> {
-  double a = 0;
-  double b = 0;
-  double toplam = 0;
+  late TextEditingController controllerTextfieldTop;
+  late TextEditingController controllerTextfieldBottom;
+  num total = 0;
+
+  @override
+  void initState() {
+    controllerTextfieldTop = TextEditingController();
+    controllerTextfieldBottom = TextEditingController();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         TextField(
+          controller: controllerTextfieldTop,
           key: const Key('textfield_top_plus'),
-          onChanged: (value) {
-            setState(() {
-              a = double.tryParse(value) ?? 0.0;
-            });
-          },
         ),
         TextField(
+          controller: controllerTextfieldBottom,
           key: const Key('textfield_bottom_plus'),
-          onChanged: (value) async {
-            b = double.tryParse(value) ?? 0.0;
-            toplam = await _calculate(a, b);
-            setState(() {});
-          },
         ),
-        CustomText(text: toplam.toStringAsFixed(0)),
+        ElevatedButton(
+            key: const Key('calc_button'),
+            onPressed: () {
+              final a = num.tryParse(controllerTextfieldTop.text) ?? 0;
+              final b = num.tryParse(controllerTextfieldBottom.text) ?? 0;
+
+              _calculate(a, b).then((value) {
+                setState(() {});
+              });
+            },
+            child: const Icon(Icons.add)),
+        Text(
+          'result=$total',
+          key: const Key('result_text'),
+        )
       ],
     );
   }
 
-  Future<double> _calculate(double a, double b) async {
-    double result;
-    switch (widget.operation) {
-      case Operation.add:
-        result = widget.calculator.add(a, b);
-        break;
-      case Operation.substract:
-        result = widget.calculator.substract(a, b);
-        break;
-      case Operation.divide:
-        result = widget.calculator.divide(a, b);
-        break;
-      case Operation.powerTo:
-        result = await widget.calculator.powerTo(a, b);
-        break;
-      default:
-        result = widget.calculator.multiply(a, b);
+  Future<void> _calculate(num a, num b) async {
+    try {
+      switch (widget.operation) {
+        case Operation.add:
+          total = await Future.value(widget.calculator.add(a, b));
+          break;
+        case Operation.substract:
+          total = await Future.value(widget.calculator.substract(a, b));
+          break;
+        case Operation.divide:
+          total = await Future.value(widget.calculator.divide(a, b));
+
+          break;
+        case Operation.powerTo:
+          total = await widget.calculator.powerTo(a, b);
+          break;
+        default:
+          total = await Future.value(widget.calculator.multiply(a, b));
+      }
+      widget.onCalculated();
+    } catch (e) {
+      debugPrint('hata yakaladık = ${e.toString()}');
     }
-    return result;
   }
 }

@@ -40,9 +40,9 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  double a = 0;
-  double b = 0;
-  double toplam = 0;
+  num a = 0;
+  num b = 0;
+  num toplam = 0;
   Calculator calculator = Calculator();
   @override
   Widget build(BuildContext context) {
